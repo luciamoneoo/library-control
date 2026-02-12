@@ -17,63 +17,75 @@ public class Library implements Controlable {
      */
     public static Library fromFile(Path path){
         Library library = new Library();
+
+        // la clase library deberá abrir el archivo y leerlo
+        //en cada línea se separara el usuario y el evento
+        // además se añadirá el evento a cada usuario
          try(var lines = java.nio.file.Files.lines(path)){
 
-        lines.forEach(line -> {
+        lines.forEach(line -> { //para que se lea cala linea
 
-            String[] parts = line.split(";");
+            String[] parts = line.split(";");// aqui es donde se sepaeara el usuario del evento con ;
+            //siendo el usuario guardado en la posicion 0 y el evento en la posicion 1
+            String usuario = parts[0]; //aqui como hemos dicho antes, se guqrda el usuario
+            EventType evento; // definimos el evento como eventype para que nos de entrada o salida
+            //aqui, estamos convirtiendo el evento en un eventype, para que defina si es entrada o salida
 
-            String id = parts[0];
-            EventType event = parts[1].equals("ENTRADA")
-                    ? EventType.ENTRY
-                    : EventType.EXIT;
+            //con un if, compararemos el evento para que el programa diga si es una entrada o una salida
+                    if(parts[1].equals("ENTRADA")){
+                    evento = EventType.ENTRY;
+                    } else {
+                    evento = EventType.EXIT;
+                    }
 
-            library.registerChange(id, event);
+            library.registerChange(usuario, evento); //sirve para guardar lso datos que han entrado de usuario y evento
+
         });
 
-    } catch(Exception e){
-        e.printStackTrace();
-        System.exit(1);
+    } catch(Exception e){ // por si hubiese algun error como que el archivo no existe o no se puede leer
+        e.printStackTrace(); //printStackTrace sirve para que se imprima el error ocurrido y te diga donde ha pasado 
+        System.exit(1); // esta linea significaría que saldríamos del programa
     }
-        return library;
+        return library; // se devuelve la biblioteca con todo actualizado
     }
 
     private Library(){
         this.users = new HashMap<>();
     }
 
-    public void registerChange(String id, EventType e){
+    public void registerChange(String usuario, EventType evento){
 
-    User user = users.get(id);
+    User user = this.users.get(usuario);
 
     if(user == null){
-        user = new User(id);
-        users.put(id, user);
+        user = new User(usuario);
+        users.put(usuario, user); //aqui se crearia y se añadiria al map si el usuario no existiese
     }
-    user.registerEvent(e);
+    user.registerEvent(evento);
 }
 
-public List<User> getCurrentInside(){
+public List<User> getCurrentInside(){ // para que el prgrama nos devuelva la lista de los usuarios
+    
+    return users.values()
+            .stream()// recorre todos los usuarios
+            .filter(User::isInside)// esto filtraria los usuario con Entry
+            .toList(); // los devuelve en formato de lista
+}
+
+public List<User> getUserList(){ //aqui se ordenaran según el numero de cada usuario 
     return users.values()
             .stream()
-            .filter(User::isInside)
+            .sorted((u1,u2) -> u1.getId().compareTo(u2.getId())) //es uel metodo que los ordena pro el nombre id
             .toList();
 }
 
-public List<User> getUserList(){
-    return users.values()
-            .stream()
-            .sorted((u1,u2) -> u1.getId().compareTo(u2.getId()))
-            .toList();
-}
+public List<User> getMaxEntryUsers(){ // para calcular el numero de enradas de cada uno, por eso lo definimos como int
 
-public List<User> getMaxEntryUsers(){
-
-    int max = users.values()
+    int max = users.values() // va reccorriendo los usuarios y las entrads para calcular luego el máximo
             .stream()
-            .mapToInt(User::getEntryCount)
-            .max()
-            .orElse(0);
+            .mapToInt(User::getEntryCount) //toma cada usuario 1 por 1 y obtiene su numero de entradas
+            .max() // calcula el maximo de entradas
+            .orElse(0); //en caso de que no hubiese ningun usuario, se quedaria en 0
 
     return users.values()
             .stream()

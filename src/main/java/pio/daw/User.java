@@ -1,8 +1,9 @@
 package pio.daw;
 
 public class User implements Localizable {
+
     private String id;
-    private EventType nEntries = 0;
+    private EventType nEntries = null;
     private Boolean inside = false;
     private int contadorEntrada = 0;
 
@@ -15,32 +16,29 @@ public class User implements Localizable {
     }
 
     public int getEntryCount(){
-    return contadorEntrada;
-}
-
-
-    public Boolean isInside(){
-    return inside;
-}
-
-    public void registerEvent(EventType e){
-
-    if(e == EventType.ENTRY){
-
-        // Entrada duplicada → ignorar
-        if(!inside){
-            inside = true;
-            contadorEntrada++;
-        }
-
-    } else if(e == EventType.EXIT){
-
-        // Salida sin entrada → ignorar
-        if(inside){
-            inside = false;
-        }
+        return contadorEntrada;
     }
 
-    nEntries = e;
-}
+    public Boolean isInside(){
+        return inside;
+    }
+
+    public void registerEvent(EventType E){
+
+        if(E == EventType.ENTRY){
+
+            if(!inside){
+                inside = true;
+                contadorEntrada++;
+            }
+
+        } else if(E == EventType.EXIT){
+
+            if(inside){
+                inside = false;
+            }
+        }
+
+        nEntries = E;
+    }
 }
