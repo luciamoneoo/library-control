@@ -2,7 +2,7 @@ package pio.daw;
 
 public class User implements Localizable {
     private String id;
-    private EventType lasEvent = null;
+    private EventType nEntries = 0;
     private Boolean inside = false;
     private int contadorEntrada = 0;
 
@@ -41,6 +41,6 @@ public class User implements Localizable {
         }
     }
 
-    lasEvent = e;
+    nEntries = e;
 }
 }
