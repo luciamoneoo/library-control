@@ -16,7 +16,7 @@ public class App {
         //entonces, con un if, veremos si hay argumento o no, sino, saldremos del programa
         // la lonitud del argumeno será de 1 que será el nombre del archivo que tieen los registros
         if(args.length != 1){
-            System.out.println(" Pase la ruta del archivo: ");
+            System.out.println(" Pase la ruta del archivo: "); // la ruta de acceso es mejor pasarla al ejecutar el programa en vez de cuando salte este mensaje
             System.exit(1);
         } 
         // ahora crearemos un objeto path con el argumento que le damos al programa
