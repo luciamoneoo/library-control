@@ -27,7 +27,7 @@ public class Library implements Controlable {
 
             String[] parts = line.split(";");// aqui es donde se sepaeara el usuario del evento con ;
             //siendo el usuario guardado en la posicion 0 y el evento en la posicion 1
-            String usuario = parts[0]; //aqui como hemos dicho antes, se guqrda el usuario
+            String id = parts[0]; //aqui como hemos dicho antes, se guqrda el usuario
             EventType evento; // definimos el evento como eventype para que nos de entrada o salida
             //aqui, estamos convirtiendo el evento en un eventype, para que defina si es entrada o salida
 
@@ -38,7 +38,7 @@ public class Library implements Controlable {
                     evento = EventType.EXIT;
                     }
 
-            library.registerChange(usuario, evento); //sirve para guardar lso datos que han entrado de usuario y evento
+            library.registerChange(id, evento); //sirve para guardar lso datos que han entrado de usuario y evento
 
         });
 
@@ -53,19 +53,19 @@ public class Library implements Controlable {
         this.users = new HashMap<>();
     }
 
-    public void registerChange(String usuario, EventType evento){
+    public void registerChange(String idUsuario, EventType evento){
 
-    User user = this.users.get(usuario);
+    User user = this.users.get(idUsuario);
 
     if(user == null){
-        user = new User(usuario);
-        users.put(usuario, user); //aqui se crearia y se añadiria al map si el usuario no existiese
+        user = new User(idUsuario);
+        users.put(idUsuario, user); //aqui se crearia y se añadiria al map si el usuario no existiese
     }
     user.registerEvent(evento);
+    this.users.put(idUsuario, user);
 }
 
 public List<User> getCurrentInside(){ // para que el prgrama nos devuelva la lista de los usuarios
-    
     return users.values()
             .stream()// recorre todos los usuarios
             .filter(User::isInside)// esto filtraria los usuario con Entry
@@ -80,34 +80,33 @@ public List<User> getUserList(){ //aqui se ordenaran según el numero de cada us
 }
 
 public List<User> getMaxEntryUsers(){ // para calcular el numero de enradas de cada uno, por eso lo definimos como int
-
     int max = users.values() // va reccorriendo los usuarios y las entrads para calcular luego el máximo
             .stream()
-            .mapToInt(User::getEntryCount) //toma cada usuario 1 por 1 y obtiene su numero de entradas
+            .mapToInt(User::getnEntries) //toma cada usuario 1 por 1 y obtiene su numero de entradas
             .max() // calcula el maximo de entradas
             .orElse(0); //en caso de que no hubiese ningun usuario, se quedaria en 0
 
     return users.values()
             .stream()
-            .filter(u -> u.getEntryCount() == max)
+            .filter(u -> u.getnEntries() == max)// filtramos los usuarios que tengas el mismo numero de entradas que el maximo(que ya hemos calculado anyes)
             .toList();
 }
 
 public void printResume(){
 
-    System.out.println("Usuarios actualmente dentro de la biblioteca:");
+    System.out.println("Usuarios dentro:");
     getCurrentInside()
-            .forEach(u -> System.out.println(u.getId()));
+            .forEach(u -> System.out.println(u.getId())); // con este método, se recorre la lista y se imprimen 1 por 1, solo los que estan dentro
 
     System.out.println("\nNúmero de entradas por usuario:");
     getUserList()
             .forEach(u ->
-                System.out.println(u.getId() + " -> " + u.getEntryCount())
-            );
+                System.out.println(u.getId() + " -> " + u.getnEntries())
+            );// aqui lo qe hara sera que de forma ordenada, imprimira los usuarios y los eventos
 
-    System.out.println("\nUsuario(s) con más entradas:");
+    System.out.println("\nUsuarios con más entradas:");
     getMaxEntryUsers()
-            .forEach(u -> System.out.println(u.getId()));
+            .forEach(u -> System.out.println(u.getId())); //por último se imprime el resuemn de los usuarios con mas entradas
 }
  
 }
